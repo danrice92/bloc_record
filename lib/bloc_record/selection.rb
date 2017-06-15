@@ -18,7 +18,7 @@ module Selection
       WHERE #{attribute} = #{value};
     SQL
 
-    rows.each do |row|
+    rows.map do |row|
       data = Hash[columns.zip(row)]
       new(data)
     end
