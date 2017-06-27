@@ -121,20 +121,36 @@ module Selection
       SQL
     end
 
-    row_array = rows_to_array(rows)
-
-    yield(row_array)
-
+    rows.each do |row|
+      yield init_object_from_row(row)
+    end
   end
 
-  def find_in_batches(start, batch_size)
-    rows = connection.execute <<-SQL
-      SELECT #{columns.join ","} FROM #{table}
-      LIMIT #{batch_size} OFFSET #{start};
-    SQL
+  def find_in_batches(options = {})
+    start = options[:start]
+    batch_size = options[:batch_size]
+    if start != nil && batch_size != nil
+      rows = connection.execute <<-SQL
+        SELECT #{columns.join ","} FROM #{table}
+        LIMIT #{batch_size} OFFSET #{start};
+      SQL
+    elsif start == nil && batch_size != nil
+      rows = connection.execute <<-SQL
+        SELECT #{columns.join ","} FROM #{table}
+        LIMIT #{batch_size};
+      SQL
+    elsif start != nil && batch_size == nil
+      rows = connection.execute <<-SQL
+        SELECT #{columns.join ","} FROM #{table}
+        OFFSET #{start};
+      SQL
+    else
+      rows = connection.execute <<-SQL
+        SELECT #{columns.join ","} FROM #{table};
+      SQL
+    end
 
     row_array = rows_to_array(rows)
-
     yield(row_array)
   end
 
@@ -159,7 +175,7 @@ module Selection
         puts "#{attribute} does not exist in the database -- please try again."
       end
     else
-      puts "#{method_name} is not a valid input -- please try again."
+      super
     end
   end
 end
