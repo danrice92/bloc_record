@@ -1,5 +1,6 @@
 require 'sqlite3'
 require 'bloc_record/schema'
+require 'bloc_record/error_handling'
 
 module Persistence
   def self.included(base)
@@ -53,6 +54,18 @@ module Persistence
     end
 
     def update(ids, updates)
+      if updates.is_a? Array
+        count = 0
+        while count < ids.length
+          each_update(ids[count], updates[count])
+          count += 1
+        end
+      else
+        each_update(ids, updates)
+      end
+    end
+
+    def each_update(ids, updates)
       updates = BlocRecord::Utility.convert_keys(updates)
       updates.delete "id"
       updates_array = updates.map { |key, value| "#{key}=#{BlocRecord::Utility.sql_strings(value)}" }
@@ -77,4 +90,5 @@ module Persistence
       update(nil, updates)
     end
   end
+
 end
