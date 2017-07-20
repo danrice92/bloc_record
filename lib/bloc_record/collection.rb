@@ -29,5 +29,15 @@ module BlocRecord
       results
     end
 
+    def destroy_all
+      if self.length > 0
+        self.each do |element|
+          element.destroy
+        end
+      else
+        puts "There's nothing to destroy in this collection. Try again."
+      end
+    end
+
   end
 end
