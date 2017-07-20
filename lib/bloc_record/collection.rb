@@ -14,23 +14,19 @@ module BlocRecord
     end
 
     def where(params)
-      key = params.keys.first.to_s
-      value = params.values.first.to_s
-      self.each do |item|
-        if item.send(key) == value
-          puts item
-        end
+      results = BlocRecord::Collection.new
+      params.each do |k, v|
+        results << self.select { |item| item if item.send(k) == v }
       end
+      results
     end
 
     def not(params)
-      key = params.keys.first.to_s
-      value = params.values.first.to_s
-      self.each do |item|
-        if item.send(key) != value
-          puts item
-        end
+      results = BlocRecord::Collection.new
+      params.each do |k, v|
+        results << self.select { |item| item if item.send(k) != v }
       end
+      results
     end
 
   end
