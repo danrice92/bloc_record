@@ -24,6 +24,7 @@ module Associations
       rows = self.class.connection.execute <<-SQL
         SELECT * FROM #{association.to_s.singularize}
         WHERE #{self.class.table}_id = #{self.id}
+        LIMIT 1
       SQL
 
       class_name = association.to_s.classify.constantize

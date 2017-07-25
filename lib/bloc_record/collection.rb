@@ -16,19 +16,25 @@ module BlocRecord
     def where(params)
       results = BlocRecord::Collection.new
       params_to_meet = params.keys.length
-      params_met = 0
+
       self.each do |item|
+        params_met = 0
         params.each do |k, v|
           if item.send(k) == v
             params_met += 1
             if params_to_meet == params_met && results.include?(item) == false
               results << item
-              params_met = 0
             end
           end
         end
       end
       results
+
+      self.select do |item|
+        params.all? |key, value|
+          item.send(key) == value
+        end
+      end
     end
 
     def not(params)
@@ -41,15 +47,18 @@ module BlocRecord
         end
       end
       results
+
+      self.select do |item|
+        !params.any? |key, value|
+          item.send(key) == value
+        end
+      end
     end
 
     def destroy_all
-      if self.length > 0
-        self.each do |element|
-          element.destroy
-        end
-      else
-        puts "There's nothing to destroy in this collection. Try again."
+      self.each do |element|
+        element.destroy
+        puts "#{element} was deleted from the database"
       end
     end
 
