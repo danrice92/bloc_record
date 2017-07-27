@@ -29,12 +29,6 @@ module BlocRecord
         end
       end
       results
-
-      self.select do |item|
-        params.all? |key, value|
-          item.send(key) == value
-        end
-      end
     end
 
     def not(params)
@@ -47,12 +41,6 @@ module BlocRecord
         end
       end
       results
-
-      self.select do |item|
-        !params.any? |key, value|
-          item.send(key) == value
-        end
-      end
     end
 
     def destroy_all
