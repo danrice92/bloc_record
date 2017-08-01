@@ -6,7 +6,7 @@ module Connection
     if BlocRecord.database_type == :sqlite3
       @connection ||= SQLite3::Database.new(BlocRecord.database_filename)
     elsif BlocRecord.database_type == :pg
-      @connection ||= PG::Database.new(BlocRecord.database_filename)
+      @connection = PG.connect(dbname: BlocRecord.database_filename)
     end
   end
 end
